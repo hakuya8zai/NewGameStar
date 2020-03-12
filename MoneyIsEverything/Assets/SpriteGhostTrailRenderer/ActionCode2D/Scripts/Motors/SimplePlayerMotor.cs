@@ -11,7 +11,7 @@ namespace ActionCode2D.Motors
     {
         [Header("Inputs")]
         [SerializeField] private string _horizontalAxisInput = "Horizontal";
-        [SerializeField] private string _jumpButtonInput = "Jump";
+        ///[SerializeField] private string _jumpButtonInput = "Jump";
 
         [Header("Animator")]
         [SerializeField] private string _hInputParam = "hInput";
@@ -39,7 +39,7 @@ namespace ActionCode2D.Motors
         private int _groundedId;
 
         private bool _isGrounded = false;
-        private bool _hasJumped = false;
+        ///private bool _hasJumped = false;
 
         private void Reset()
         {
@@ -52,48 +52,63 @@ namespace ActionCode2D.Motors
         {
             _hInputId = Animator.StringToHash(_hInputParam);
             _vSpeedId = Animator.StringToHash(_vSpeedParam);
-            _jumpId = Animator.StringToHash(_jumpParam);
+           /// _jumpId = Animator.StringToHash(_jumpParam);
             _groundedId = Animator.StringToHash(_groundedParam);
         }
 
         private void Update()
         {
+
             if(Time.timeScale > 0.1f)
             {
                 UpdateInput();
                 UpdateAnimator();
             }
+
         }
 
         private void FixedUpdate()
         {
-            UpdatePhysics();
+            if(ResidentA.InterActing!=true)
+            {
+                UpdatePhysics();
+            }
         }
 
         private void UpdatePhysics()
         {
             transform.position += Vector3.right * _horInput * speed * Time.deltaTime;
             _isGrounded = _rigidbody.IsTouching(groundFilter);
-            if (_hasJumped) _rigidbody.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+            ///if (_hasJumped) _rigidbody.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
         }
 
         private void UpdateInput()
         {
             _horInput = Input.GetAxis(_horizontalAxisInput);
-            if (_horInput * _lastDirection < 0f) FlipHorizontally();
 
-            _hasJumped = _isGrounded && Input.GetButtonDown(_jumpButtonInput);
+            ///_hasJumped = _isGrounded && Input.GetButtonDown(_jumpButtonInput);
+            if(ResidentA.InterActing ==false)
+            {
+            if (_horInput * _lastDirection < 0f) FlipHorizontally();
 
             if (_horInput < 0f) _lastDirection = -1f;
             else if (_horInput > 0f) _lastDirection = 1f;
+            }
         }
 
         private void UpdateAnimator()
         {
-            _animator.SetFloat(_hInputId, Mathf.Abs(_horInput));
+            if(ResidentA.InterActing !=false)
+            {
+            _animator.SetFloat(_hInputId, Mathf.Abs(0.0f));
+            }
+            else
+            {
+                _animator.SetFloat(_hInputId, Mathf.Abs(_horInput));
+            }
             _animator.SetFloat(_vSpeedId, _rigidbody.velocity.y);
             _animator.SetBool(_groundedId, _isGrounded);
-            if (_hasJumped) _animator.SetTrigger(_jumpId);
+            ///if (_hasJumped) _animator.SetTrigger(_jumpId);
         }
 
 
